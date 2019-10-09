@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="8dp">
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/TextInputLayout">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/email_editor"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="textEmailAddress"
+            android:hint="@string/user_email"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/TextInputLayout">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/first_name_editor"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="textPersonName"
+            android:hint="@string/user_first_name"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/TextInputLayout">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/last_name_editor"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="textPersonName"
+            android:hint="@string/user_last_name"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/TextInputLayout">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/birth_date_editor"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="date"
+            android:hint="@string/birth_date"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/TextInputLayout">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/phone_number_editor"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="phone"
+            android:hint="@string/phone_number"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+</LinearLayout>

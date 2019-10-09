@@ -1,11 +1,11 @@
-package com.tregz.mvvm.data
+package com.tregz.mvvm.data.item
 
 import android.util.Log
 import com.tregz.mvvm.R
 import com.tregz.mvvm.core.date.DateUtil
 import java.util.*
 
-data class DataApple(val ripe: Date?) {
+data class ItemApple(val ripe: Date?) {
 
     var color: Int = R.color.colorPrimary
         set(value) {
@@ -27,6 +27,6 @@ data class DataApple(val ripe: Date?) {
     }
 
     companion object {
-        private val TAG: String = DataApple::class.java.simpleName
+        private val TAG: String = ItemApple::class.java.simpleName
     }
 }

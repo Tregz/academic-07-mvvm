@@ -2,72 +2,96 @@ package com.tregz.mvvm.main
 
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.text.HtmlCompat
+import androidx.core.text.HtmlCompat.FROM_HTML_MODE_LEGACY
+import androidx.core.widget.doOnTextChanged
 import com.tregz.mvvm.R
+import com.tregz.mvvm.arch.bind.BindFactory
+import com.tregz.mvvm.base.BaseFragment
 import com.tregz.mvvm.core.date.DateUtil
-import com.tregz.mvvm.data.DataApple
+import com.tregz.mvvm.data.item.ItemApple
 import com.tregz.mvvm.list.ListApple
-import com.tregz.mvvm.view.ViewApple
+import kotlinx.android.synthetic.main.fragment_main.*
+import java.lang.NumberFormatException
+import java.text.SimpleDateFormat
 import java.util.*
 
-class MainFragment : Fragment() {
+class MainFragment : BaseFragment() {
 
-    private lateinit var viewModel: MainBackend
-    private var listApple: ListApple? = null
-
-    private val apple : DataApple
-        get() = DataApple(Date()).apply {
-            listApple?.add(this)
-            this.color = R.color.colorPrimary
+    private val backend: MainBackend by lazy {
+        // Inject MainListener interface in ViewModel
+        with(ViewModelProviders.of(this, BindFactory { MainBackend(listener) })) {
+            get(MainBackend::class.java)
         }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        val apple1 = DataApple(Date())  // today
-        apple1.color = R.color.colorAccent
-        listApple = (activity as MainActivity?)?.let { ListApple(it) }
-        listApple?.add(apple1)
-        listApple?.add(apple1)
-        Log.i(TAG, "La pomme 1 est comestible? " + apple1.edible())
-        Log.i(TAG, "La pomme 1 est de couleur: " + apple1.color)
-
-        val apple2 = DataApple(DateUtil.addMonth(Date(), -1)) // last month
-        listApple?.add(apple2)
-        apple2.color = android.R.color.white
-        Log.i(TAG, "La pomme 2 est comestible? " + apple2.edible())
-        Log.i(TAG, "La pomme 2 est de couleur: " + apple2.color)
-
-
-        val apple3 = DataApple(null)
-        listApple?.add(apple3)
-        apple3.color = R.color.colorPrimary
-        Log.i(TAG, "La pomme 3 est comestible? " + apple3.edible())
-        Log.i(TAG, "La pomme 3 est de couleur: " + apple3.color)
-
-        val apple4 = apple
-        Log.i(TAG, "La pomme 4 est comestible? " + apple4.edible())
-        Log.i(TAG, "La pomme 4 est de couleur: " + apple4.color)
     }
+
+    private var input: String = ""
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return inflater.inflate(R.layout.main_fragment, container, false)
+        return inflater.inflate(R.layout.fragment_main, container, false)
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProviders.of(this).get(MainBackend::class.java)
-        // TODO: Use the ViewModel
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        ListApple.clear()
+
+        onAppleCreated(backend.insertApple(Date(), R.color.colorAccent))
+        onAppleCreated(backend.insertApple(DateUtil.addMonth(Date(), -1), android.R.color.white))
+        onAppleCreated(backend.insertApple(null, R.color.colorPrimary))
+
+        input_editor.doOnTextChanged { text, _, _, _ ->
+            with(text.toString()) { if (isNotEmpty()) input = this }
+        }
+
+        negative_button.setOnClickListener {
+            input_editor.setText("")
+            sum.text = ""
+        }
+
+        positive_button.setOnClickListener {
+            try {
+                if (Integer.parseInt(input) == ListApple.listCount)
+                    sum.text = getString(R.string.answer_positive)
+                else sum.text = getString(R.string.answer_negative)
+            } catch (e: NumberFormatException) {
+                e.message?.let { listener.toast("Error: $it") }
+                sum.text = getString(R.string.answer_negative)
+            }
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        listener.onFragmentStart("Main")
+    }
+
+    private fun onAppleCreated(apple: ItemApple) {
+        log.append(HtmlCompat.fromHtml("<b>Pomme ajoutée</b>", FROM_HTML_MODE_LEGACY))
+        val skeleton = "d MMMM yyyy"
+        val formatter = SimpleDateFormat(skeleton, Locale.getDefault())
+        val day = apple.ripe?.let { formatter.format(it) }
+        val unknown = "Non cueillie ou date de cueillette inconnue."
+        val riped = if (day != null) "Cueillie le $day." else unknown
+        log.append("\n" + riped + "\n")
+        val total = "Taille de la liste: ${ListApple.listCount}"
+        sum.text = total
     }
 
     companion object {
         fun newInstance() = MainFragment()
-        private val TAG: String = MainFragment::class.java.simpleName
+
+        init {
+            TAG = MainFragment::class.java.simpleName
+        }
+
+        fun getTAG() : String {
+            return TAG
+        }
     }
 }

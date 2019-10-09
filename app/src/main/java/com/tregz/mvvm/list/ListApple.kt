@@ -1,19 +1,29 @@
 package com.tregz.mvvm.list
 
-import com.tregz.mvvm.data.DataApple
-import com.tregz.mvvm.view.ViewApple
+import com.tregz.mvvm.data.item.ItemApple
 
-class ListApple(private val view: ViewApple) {
+object ListApple {
 
-    private val list = mutableListOf<DataApple>()
-    private val set = mutableSetOf<DataApple>()
-    private val map = mutableMapOf<Int, DataApple>()
+    private val list = mutableListOf<ItemApple>()
+    private val set = mutableSetOf<ItemApple>()
+    private val map = mutableMapOf<Int, ItemApple>()
 
-    fun add(apple: DataApple) {
+    val listCount: Int
+        get() = list.size
+
+    val setCount: Int
+        get() = set.size
+
+    fun add(apple: ItemApple): ItemApple {
         list.add(apple)
         set.add(apple)
         map[map.size] = apple
-        view.onAppleCreated(list.size, set.size)
+        return apple
     }
 
+    fun clear() {
+        list.clear()
+        set.clear()
+        map.clear()
+    }
 }
